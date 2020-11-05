@@ -1,36 +1,36 @@
 DGS004
 graphflow 0 31
 
-an S label=S
-an Usine1 label=Usine1
-an PF1 label=PF1
-an Usine2 label=Usine2
-an PF2 label=PF2
-an PF3 label=PF3
-an PF4 label=PF4
-an PF5 label=PF5
-an Client1 label=Client1
-an Client2 label=Client2
-an Client3 label=Client3
-an T label=T
+an S label=Start x:-2 y:0
+an Usine1 label=Usine1 x:-1.3 y:0.5
+an Usine2 label=Usine2 x:-1.3 y:-0.5
+an PF1 label=PF1 x:-0.5 y:1
+an PF2 label=PF2 x:0 y:0
+an PF3 label=PF3 x:-0.5 y:-1
+an PF4 label=PF4 x:0.3 y:1
+an PF5 label=PF5 x:0.3 y:-1
+an Client1 label=Client1 x=1.3 y=1
+an Client2 label=Client2 x=1 y=0
+an Client3 label=Client3 x=1.3 y=-1
+an T label=End x=2 y=0
 
-ae 35 S > Usine1 fluxMax=35
-ae 25 S > Usine2 fluxMax=25
-ae 20a Usine1 > PF1 fluxMax=20
-ae 15a Usine1 > PF2 fluxMax=15
-ae 12 Usine1 > PF3 fluxMax=12
-ae 6 Usine2 > PF2 fluxMax=6
-ae 22a Usine2 > PF3 fluxMax=22
-ae 15b PF1 > PF4 fluxMax=15
-ae 10a PF1 > PF2 fluxMax=10
-ae 10b PF2 > Client1 fluxMax=10
-ae 15c PF2 > Client2 fluxMax=15
-ae 15d PF2 > Client3 fluxMax=15
-ae 22b PF3 > PF5 fluxMax=22
-ae 7 PF4 > Client1 fluxMax=7
-ae 10c PF4 > Client2 fluxMax=10
-ae 10d PF5 > Client2 fluxMax=10
-ae 10e PF5 > Client3 fluxMax=10
-ae 15e Client1 > T fluxMax=15
-ae 15f Client2 > T fluxMax=15
-ae 20b Client3 > T fluxMax=20
+ae 35 S > Usine1 weight=35
+ae 25 S > Usine2 weight=25
+ae 20 Usine1 > PF1 weight=20
+ae 15 Usine1 > PF2 weight=15
+ae 12 Usine1 > PF3 weight=12
+ae 6 Usine2 > PF2 weight=6
+ae 2 Usine2 > PF3 weight=2
+ae 15a PF1 > PF4 weight=15
+ae 10 PF1 > PF2 weight=10
+ae 22 PF3 > PF5 weight=22
+ae 7 PF4 > Client1 weight=7
+ae 10a PF4 > Client2 weight=10
+ae 10b PF2 > Client1 weight=10
+ae 15b PF2 > Client2 weight=15
+ae 15c PF2 > Client3 weight=15
+ae 10c PF5 > Client2 weight=10
+ae 10d PF5 > Client3 weight=10
+ae 15d Client1 > T weight=15
+ae 15e Client2 > T weight=15
+ae 20a Client3 > T weight=20

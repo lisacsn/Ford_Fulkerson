@@ -6,7 +6,7 @@ import org.graphstream.graph.Path;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.algorithm.flow.FlowAlgorithm;
-import org.graphstream.algorithm.flow.FlowAlgorithmBase;
+import org.graphstream.algorithm.flow.FordFulkersonAlgorithm;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.stream.GraphParseException;
 
@@ -17,12 +17,12 @@ public class Flow {
 
         Graph G = new DefaultGraph("Graphe");
         G.read("src/graph2.dgs");
-        G.display();
+        G.display(false);
 
         FlowAlgorithm algorithm = new FordFulkerson();
 
-        algorithm.init(G, "S", "T"); // On initialise en précisant bien s et t
-        algorithm.setCapacityAttribute("fluxMax"); // On initialise les flux maximal sur chaque arc
+        algorithm.init(G, "S", "T");
+        algorithm.setCapacityAttribute("weight");
         algorithm.compute();
 
         System.out.println("Le flot maximal de ce graphe est : " + algorithm.getMaximumFlow());

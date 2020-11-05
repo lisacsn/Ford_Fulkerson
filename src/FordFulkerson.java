@@ -1,10 +1,10 @@
 
 import java.util.*;
 import org.graphstream.graph.Graph;
-import org.graphstream.graph.Path;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
-import java.util.stream.Stream;
+
+import java.util.stream.Collectors;
 import org.graphstream.algorithm.flow.FlowAlgorithmBase;
 
 public class FordFulkerson extends FlowAlgorithmBase {
@@ -13,7 +13,7 @@ public class FordFulkerson extends FlowAlgorithmBase {
     public void compute() {
         Node source = this.flowGraph.getNode(sourceId);
         Node puit = this.flowGraph.getNode(sinkId);
-        Path chaine;
+        List<Edge> chaine;
         this.maximumFlow = 0;
         int nbAretes = this.flowGraph.getEdgeCount();
 
@@ -30,51 +30,57 @@ public class FordFulkerson extends FlowAlgorithmBase {
 
             if (chaine != null) {
                 double delta = CalculerFlot(chaine);
+                System.out.println(delta);
                 augmenterFlotAvants(delta, chaine);
+                this.maximumFlow += delta;
             }
 
         } while (chaine != null);
     }
 
-    public Path chaineAmeliorante(Node noeud, Node t) {
-        // Si source = puit càd pas de graphe alors on retourne chaine vide
+    public List<Edge> chaineAmeliorante(Node noeud, Node t) {
         if (noeud.equals(t))
-            return new Path();
+            return new LinkedList<Edge>();
         else {
-            return successeurNonSature(noeud).map(aretes -> {
-                Path chaine = chaineAmeliorante(aretes.getTargetNode(), t);
-                if ((aretes.getTargetNode() != t) || (chaine != null))
-                    chaine.add(aretes);
-                return chaine;
-            }).filter(aretes -> aretes != null).findFirst().orElse(null);
+            for (Edge arete : successeurNonSature(noeud)) {
+                List<Edge> ret = chaineAmeliorante(arete.getOpposite(noeud), t);
+                if (ret != null) {
+                    ret.add(arete);
+                    return ret;
+                }
+            }
         }
+        return null;
     }
 
-    public Stream<Edge> successeurNonSature(Node sommet) {
-        Stream<Edge> l = sommet.leavingEdges().filter(s -> this.capacities[s.getIndex()] > this.flows[s.getIndex()]);
-
-        return l;
+    public List<Edge> successeurNonSature(Node sommet) {
+        return sommet
+                .leavingEdges().filter(e -> this.getCapacity(e.getSourceNode(), e.getTargetNode()) > this
+                        .getFlow(e.getSourceNode(), e.getTargetNode()))
+                .filter(s -> s != null).collect(Collectors.toList());
     }
 
-    public double CalculerFlot(Path chaine) {
-        Iterator<Edge> edgeIt = chaine.getEdgeIterator();
-        double delta = this.capacities[edgeIt.next().getIndex()] - this.flows[edgeIt.next().getIndex()];
+    public double CalculerFlot(List<Edge> chaine) {
+        double delta = Double.MAX_VALUE;
 
-        while (edgeIt.hasNext()) {
-            double temp = this.capacities[edgeIt.next().getIndex()] - this.flows[edgeIt.next().getIndex()];
-            if (temp < delta)
+        for (Edge i : chaine) {
+            double temp = this.getCapacity(i.getSourceNode(), i.getTargetNode())
+                    - this.getFlow(i.getSourceNode(), i.getTargetNode());
+
+            if (temp < delta) {
                 delta = temp;
+            }
         }
         return delta;
     }
 
-    public void augmenterFlotAvants(double delta, Path chaine) {
+    public void augmenterFlotAvants(double delta, List<Edge> chaine) {
         double newFlow;
 
-        for (int i = 0; i < chaine.getEdgeCount(); i++) {
-            Node noeud1 = this.flowGraph.getEdge(i).getSourceNode();
-            Node noeud2 = this.flowGraph.getEdge(i).getTargetNode();
-            newFlow = delta + this.flows[i];
+        for (Edge i : chaine) {
+            Node noeud1 = i.getSourceNode();
+            Node noeud2 = i.getTargetNode();
+            newFlow = delta + this.getFlow(noeud1, noeud2);
             this.setFlow(noeud1, noeud2, newFlow);
         }
     }
