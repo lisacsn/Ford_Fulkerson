@@ -1,31 +1,87 @@
 
 import java.util.*;
-
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Path;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
+import java.util.stream.Stream;
 import org.graphstream.algorithm.flow.FlowAlgorithmBase;
-import org.graphstream.graph.implementations.SingleGraph;
 
 public class FordFulkerson extends FlowAlgorithmBase {
 
     @Override
     public void compute() {
+        Node source = this.flowGraph.getNode(sourceId);
+        Node puit = this.flowGraph.getNode(sinkId);
+        Path chaine;
+        this.maximumFlow = 0;
+        int nbAretes = this.flowGraph.getEdgeCount();
 
+        for (int i = 0; i < nbAretes; i++) {
+            Node noeud1 = this.flowGraph.getEdge(i).getSourceNode();
+            Node noeud2 = this.flowGraph.getEdge(i).getTargetNode();
+            this.setFlow(noeud1, noeud2, 0.0);
+        }
+
+        loadCapacitiesFromAttribute(); // valuation des arcs
+
+        do {
+            chaine = chaineAmeliorante(source, puit);
+
+            if (chaine != null) {
+                double delta = CalculerFlot(chaine);
+                augmenterFlotAvants(delta, chaine);
+            }
+
+        } while (chaine != null);
     }
 
-    @Override
-    public void init(Graph G, String s, String t) {
-
+    public Path chaineAmeliorante(Node noeud, Node t) {
+        // Si source = puit càd pas de graphe alors on retourne chaine vide
+        if (noeud.equals(t))
+            return new Path();
+        else {
+            return successeurNonSature(noeud).map(aretes -> {
+                Path chaine = chaineAmeliorante(aretes.getTargetNode(), t);
+                if ((aretes.getTargetNode() != t) || (chaine != null))
+                    chaine.add(aretes);
+                return chaine;
+            }).filter(aretes -> aretes != null).findFirst().orElse(null);
+        }
     }
 
-    @Override
-    public void setCapacityAttribute(String fluxMax) {
+    public Stream<Edge> successeurNonSature(Node sommet) {
+        Stream<Edge> l = sommet.leavingEdges().filter(s -> this.capacities[s.getIndex()] > this.flows[s.getIndex()]);
 
+        return l;
     }
 
-    public static Node obtenirSource(Graph G) {
+    public double CalculerFlot(Path chaine) {
+        Iterator<Edge> edgeIt = chaine.getEdgeIterator();
+        double delta = this.capacities[edgeIt.next().getIndex()] - this.flows[edgeIt.next().getIndex()];
+
+        while (edgeIt.hasNext()) {
+            double temp = this.capacities[edgeIt.next().getIndex()] - this.flows[edgeIt.next().getIndex()];
+            if (temp < delta)
+                delta = temp;
+        }
+        return delta;
+    }
+
+    public void augmenterFlotAvants(double delta, Path chaine) {
+        double newFlow;
+
+        for (int i = 0; i < chaine.getEdgeCount(); i++) {
+            Node noeud1 = this.flowGraph.getEdge(i).getSourceNode();
+            Node noeud2 = this.flowGraph.getEdge(i).getTargetNode();
+            newFlow = delta + this.flows[i];
+            this.setFlow(noeud1, noeud2, newFlow);
+        }
+    }
+
+    /********************************************************************************/
+
+    public Node obtenirSource(Graph G) {
         int i = 0;
         Node n = G.getNode(0);
 
@@ -36,7 +92,7 @@ public class FordFulkerson extends FlowAlgorithmBase {
         return n;
     }
 
-    public static Node obtenirPuit(Graph G) {
+    public Node obtenirPuit(Graph G) {
         int i = 0;
         Node n = G.getNode(0);
 
@@ -47,7 +103,7 @@ public class FordFulkerson extends FlowAlgorithmBase {
         return n;
     }
 
-    public static List<Node> obtenirSuccesseurs(Node sommet) {
+    public List<Node> obtenirSuccesseurs(Node sommet) {
 
         List<Node> list = new ArrayList<Node>();
 
@@ -59,7 +115,7 @@ public class FordFulkerson extends FlowAlgorithmBase {
         return list;
     }
 
-    public static List<Node> obtenirPredecesseurs(Node sommet) {
+    public List<Node> obtenirPredecesseurs(Node sommet) {
 
         List<Node> list = new ArrayList<Node>();
 
@@ -71,62 +127,4 @@ public class FordFulkerson extends FlowAlgorithmBase {
         return list;
     }
 
-    public static Node successeurNonSature(Node s, int[][] tableau) {
-
-        List<Node> successeurs = obtenirSuccesseurs(s);
-        for (Node succ : successeurs) {
-        }
-
-        return n;
-    }
-
-    public static Path chaineAmeliorante(Graph G, int[][] tableau) {
-
-        List<Node> sommetsEmpruntes = new ArrayList<Node>();
-        Path chaine = new Path();
-
-        Node s = obtenirSource(G);
-        Node successeur = successeurNonSature(s, tableau);
-
-        return chaine;
-    }
-
-    public static int CalculerFlot(Path chaine) {
-
-        int delta = 0;
-
-        return delta;
-    }
-
-    public static int augmenterFlotAvants(int F, int[][] tableau, int delta, Path chaine) {
-
-        return F;
-    }
-
-    public static void diminuerFlotsArrieres(int[][] tableau, int delta, Path chaine) {
-
-    }
-
-    public static int algoFF(Graph G) {
-
-        int nbNode = G.getNodeCount();
-        int[][] tableauFlux = new int[nbNode][nbNode];
-        int F = 0;
-        int delta = 0; // l'augmentation
-
-        Path chaine;
-
-        do {
-            chaine = chaineAmeliorante(G, tableauFlux);
-
-            if (chaine.size() != 0) {
-                delta = CalculerFlot(chaine);
-                F = augmenterFlotAvants(F, tableauFlux, delta, chaine);
-                diminuerFlotsArrieres(tableauFlux, delta, chaine);
-            }
-
-        } while (chaine.size() != 0);
-
-        return F;
-    }
 }
