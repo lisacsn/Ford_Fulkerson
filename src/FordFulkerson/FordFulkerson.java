@@ -1,4 +1,4 @@
-
+package FordFulkerson;
 import java.util.*;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Edge;
@@ -24,7 +24,11 @@ public class FordFulkerson extends FlowAlgorithmBase {
         }
 
         loadCapacitiesFromAttribute(); // valuation des arcs
-
+        this.flowGraph.edges().forEach(e -> {
+        
+            double cap = this.capacities[e.getIndex()];
+            e.setAttribute("label",  cap);
+        });
         do {
             chaine = chaineAmeliorante(source, puit);
 

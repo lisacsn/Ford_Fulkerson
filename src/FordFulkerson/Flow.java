@@ -1,6 +1,6 @@
+package FordFulkerson;
 import java.io.IOException;
 import java.util.*;
-
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Path;
 import org.graphstream.graph.Edge;
@@ -16,7 +16,7 @@ public class Flow {
         System.setProperty("org.graphstream.ui", "swing");
 
         Graph G = new DefaultGraph("Graphe");
-        G.read("src/graph2.dgs");
+        G.read("ressource/graph2.dgs");
         G.display(false);
 
         FlowAlgorithm algorithm = new FordFulkerson();

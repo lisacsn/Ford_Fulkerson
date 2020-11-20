@@ -1,4 +1,4 @@
-PACKAGE = fordfulkerson
+PACKAGE = FordFulkerson
 MAIN = Flow
 
 CP = classes
@@ -14,7 +14,4 @@ run: classes/$(PACKAGE)/Flow.class
 	java -classpath $(CP):$(LIB)/* $(PACKAGE).$(MAIN)
 
 clean:
-   	rm -rf classes/
-
-all : 
 	rm -rf classes/
