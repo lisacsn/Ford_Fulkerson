@@ -29,8 +29,8 @@ public class FordFulkerson extends FlowAlgorithmBase {
             chaine = chaineAmeliorante(source, puit);
 
             if (chaine != null) {
-                double delta = CalculerFlot(chaine);
-                System.out.println(delta);
+                System.out.println("Chaine améliorante : " + chaine);
+                double delta = calculerFlot(chaine);
                 augmenterFlotAvants(delta, chaine);
                 this.maximumFlow += delta;
             }
@@ -60,7 +60,7 @@ public class FordFulkerson extends FlowAlgorithmBase {
                 .filter(s -> s != null).collect(Collectors.toList());
     }
 
-    public double CalculerFlot(List<Edge> chaine) {
+    public double calculerFlot(List<Edge> chaine) {
         double delta = Double.MAX_VALUE;
 
         for (Edge i : chaine) {

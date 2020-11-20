@@ -8,3 +8,5 @@ run: classes/fordfuklerson/Flow.class
 
 clean:
     rm -rf classes/
+
+all : 
