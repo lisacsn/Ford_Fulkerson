@@ -1,10 +1,17 @@
-javac -classpath ./classes -sourcepath ./src compil: Flow.class
+PACKAGE = fordfulkerson
+MAIN = Flow
 
-Flow.class: src/fordfuklerson/.java
-    javac --source-path ./src --class-path ./classes:lib/ -d ./classes ./src/fordfuklerson/Flow.java
+CP = classes
+LIB = lib
+SRC = src
 
-run: classes/fordfuklerson/Flow.class
-    java -classpath ./classes/:./lib/* fordfuklerson.Flow
+compil: $(MAIN).java
+
+$(MAIN).java: src/**/*.java
+	javac --source-path $(SRC) --class-path $(CP):$(LIB)/* -d $(CP) ./src/$(PACKAGE)/$(MAIN).java
+
+run: classes/$(PACKAGE)/Flow.class
+	java -classpath $(CP):$(LIB)/* $(PACKAGE).$(MAIN)
 
 clean:
-    rm -rf classes/
+	rm -rf classes/
