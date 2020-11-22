@@ -134,11 +134,31 @@ Le fichier Flow.java récupère le fichier "graph2.dgs" qui contient les informa
         \affecter{i}{0}
         \pourChaque{arete}{chaine}{
             \affecter{temp}{capacite(obtenirSourceNoeud(i),obtenirCibleNoeud(i))$-$flow(obtenirCibleNoeud(i),obtenirSourceNoeud(i))}
+            \sialors{temp$<$delta}{
+                \affecter{delta}{temp}
+            }
+        }
+        \retourner{delta}
+    }
+\end{algorithme}
 
+\subsection{augmenterFlotsAvants}
+\begin{algorithme}
+    \procedure{augmenterFlotAvants}{delta : \reel,chaine : \tableauUneDimension{nbAretes}{de }{\arete} }
+    {
+        Noeud1 : \noeud; \\
+        Noeud2 : \noeud; \\
+        newFlow : \reel; 
+    }
+    {
+        \pourChaque{arete}{chaine}{
+            \affecter{Noeud1}{obtenirSourceNoeud(arete)}
+            \affecter{Noeud2}{obtenirCibleNoeud(arete)}
+            \affecter{newFlow}{delta $+$ obtenirFlow(Noeud1,Noeud2)}
+            \instruction{fixerFlow(Noeud1,Noeud2,newFlow)}
         }
     }
 \end{algorithme}
-\subsection{augmenterFlotsAvants}
 
 \section{Affichage du résultat}
 
