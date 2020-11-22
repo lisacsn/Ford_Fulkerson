@@ -21,10 +21,12 @@ public class Flow {
 
         FlowAlgorithm algorithm = new FordFulkerson();
 
+
         algorithm.init(G, "S", "T");
         algorithm.setCapacityAttribute("weight");
         algorithm.compute();
 
         System.out.println("Le flot maximal de ce graphe est : " + algorithm.getMaximumFlow());
+
     }
 }
